@@ -2,6 +2,8 @@ build/
 install/
 log/
 
+underwater_dataset/
+
 __pycache__/
 *.pyc
 *.pyo
