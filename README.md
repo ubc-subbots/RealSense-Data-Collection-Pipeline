@@ -2,6 +2,8 @@
 
 ROS 2 pipeline for Intel RealSense D455 depth camera with real-time visualization and automated dataset collection. Built for UBC Subbots autonomous underwater vehicle.
 
+![Example Output](example.jpg)
+
 ## Architecture
 
 **Publisher** (`realsense_publisher.cpp`) - C++ node using RealSense SDK for low-latency streaming  
