@@ -1,0 +1,465 @@
+{
+  "session_name": "session_20251028_212022",
+  "start_time": "2025-10-28T21:20:22.424145",
+  "mode": "time_based",
+  "images": [
+    {
+      "id": 1,
+      "filename": "img_000001.jpg",
+      "depth_filename": "depth_000001.png",
+      "timestamp": "2025-10-28T21:20:22.618654",
+      "trigger": "Time interval",
+      "depth_stats": {
+        "min": 329,
+        "max": 65535,
+        "mean": 2222.3112763987947
+      }
+    },
+    {
+      "id": 2,
+      "filename": "img_000002.jpg",
+      "depth_filename": "depth_000002.png",
+      "timestamp": "2025-10-28T21:20:24.627312",
+      "trigger": "Time interval",
+      "depth_stats": {
+        "min": 320,
+        "max": 65535,
+        "mean": 2291.2848219529124
+      }
+    },
+    {
+      "id": 3,
+      "filename": "img_000003.jpg",
+      "depth_filename": "depth_000003.png",
+      "timestamp": "2025-10-28T21:20:26.639814",
+      "trigger": "Time interval",
+      "depth_stats": {
+        "min": 516,
+        "max": 65535,
+        "mean": 2151.7246474007234
+      }
+    },
+    {
+      "id": 4,
+      "filename": "img_000004.jpg",
+      "depth_filename": "depth_000004.png",
+      "timestamp": "2025-10-28T21:20:28.653390",
+      "trigger": "Time interval",
+      "depth_stats": {
+        "min": 517,
+        "max": 65535,
+        "mean": 2140.147651749203
+      }
+    },
+    {
+      "id": 5,
+      "filename": "img_000005.jpg",
+      "depth_filename": "depth_000005.png",
+      "timestamp": "2025-10-28T21:20:30.665901",
+      "trigger": "Time interval",
+      "depth_stats": {
+        "min": 520,
+        "max": 65535,
+        "mean": 2244.2778170403
+      }
+    },
+    {
+      "id": 6,
+      "filename": "img_000006.jpg",
+      "depth_filename": "depth_000006.png",
+      "timestamp": "2025-10-28T21:20:32.678580",
+      "trigger": "Time interval",
+      "depth_stats": {
+        "min": 348,
+        "max": 65535,
+        "mean": 2196.6192798648767
+      }
+    },
+    {
+      "id": 7,
+      "filename": "img_000007.jpg",
+      "depth_filename": "depth_000007.png",
+      "timestamp": "2025-10-28T21:20:34.686423",
+      "trigger": "Time interval",
+      "depth_stats": {
+        "min": 290,
+        "max": 65535,
+        "mean": 4456.023806159932
+      }
+    },
+    {
+      "id": 8,
+      "filename": "img_000008.jpg",
+      "depth_filename": "depth_000008.png",
+      "timestamp": "2025-10-28T21:20:36.705755",
+      "trigger": "Time interval",
+      "depth_stats": {
+        "min": 290,
+        "max": 65535,
+        "mean": 1241.2087508190862
+      }
+    },
+    {
+      "id": 9,
+      "filename": "img_000009.jpg",
+      "depth_filename": "depth_000009.png",
+      "timestamp": "2025-10-28T21:20:38.716215",
+      "trigger": "Time interval",
+      "depth_stats": {
+        "min": 291,
+        "max": 65535,
+        "mean": 1520.5541480302984
+      }
+    },
+    {
+      "id": 10,
+      "filename": "img_000010.jpg",
+      "depth_filename": "depth_000010.png",
+      "timestamp": "2025-10-28T21:20:40.730083",
+      "trigger": "Time interval",
+      "depth_stats": {
+        "min": 291,
+        "max": 65535,
+        "mean": 1512.9534831471417
+      }
+    },
+    {
+      "id": 11,
+      "filename": "img_000011.jpg",
+      "depth_filename": "depth_000011.png",
+      "timestamp": "2025-10-28T21:20:42.740876",
+      "trigger": "Time interval",
+      "depth_stats": {
+        "min": 290,
+        "max": 65535,
+        "mean": 1159.7836126671232
+      }
+    },
+    {
+      "id": 12,
+      "filename": "img_000012.jpg",
+      "depth_filename": "depth_000012.png",
+      "timestamp": "2025-10-28T21:20:44.753399",
+      "trigger": "Time interval",
+      "depth_stats": {
+        "min": 290,
+        "max": 65535,
+        "mean": 566.9975286380139
+      }
+    },
+    {
+      "id": 13,
+      "filename": "img_000013.jpg",
+      "depth_filename": "depth_000013.png",
+      "timestamp": "2025-10-28T21:20:46.768657",
+      "trigger": "Time interval",
+      "depth_stats": {
+        "min": 290,
+        "max": 17885,
+        "mean": 1380.0683205179052
+      }
+    },
+    {
+      "id": 14,
+      "filename": "img_000014.jpg",
+      "depth_filename": "depth_000014.png",
+      "timestamp": "2025-10-28T21:20:48.780903",
+      "trigger": "Time interval",
+      "depth_stats": {
+        "min": 290,
+        "max": 12775,
+        "mean": 1257.1805228272603
+      }
+    },
+    {
+      "id": 15,
+      "filename": "img_000015.jpg",
+      "depth_filename": "depth_000015.png",
+      "timestamp": "2025-10-28T21:20:50.793824",
+      "trigger": "Time interval",
+      "depth_stats": {
+        "min": 290,
+        "max": 52843,
+        "mean": 1332.533239587897
+      }
+    },
+    {
+      "id": 16,
+      "filename": "img_000016.jpg",
+      "depth_filename": "depth_000016.png",
+      "timestamp": "2025-10-28T21:20:52.807204",
+      "trigger": "Time interval",
+      "depth_stats": {
+        "min": 290,
+        "max": 48439,
+        "mean": 1413.6649201709017
+      }
+    },
+    {
+      "id": 17,
+      "filename": "img_000017.jpg",
+      "depth_filename": "depth_000017.png",
+      "timestamp": "2025-10-28T21:20:54.820216",
+      "trigger": "Time interval",
+      "depth_stats": {
+        "min": 290,
+        "max": 65535,
+        "mean": 1397.4812473405873
+      }
+    },
+    {
+      "id": 18,
+      "filename": "img_000018.jpg",
+      "depth_filename": "depth_000018.png",
+      "timestamp": "2025-10-28T21:20:56.832228",
+      "trigger": "Time interval",
+      "depth_stats": {
+        "min": 290,
+        "max": 22357,
+        "mean": 1333.0122433276504
+      }
+    },
+    {
+      "id": 19,
+      "filename": "img_000019.jpg",
+      "depth_filename": "depth_000019.png",
+      "timestamp": "2025-10-28T21:20:58.845218",
+      "trigger": "Time interval",
+      "depth_stats": {
+        "min": 290,
+        "max": 29809,
+        "mean": 1349.164514206239
+      }
+    },
+    {
+      "id": 20,
+      "filename": "img_000020.jpg",
+      "depth_filename": "depth_000020.png",
+      "timestamp": "2025-10-28T21:21:00.858259",
+      "trigger": "Time interval",
+      "depth_stats": {
+        "min": 290,
+        "max": 43057,
+        "mean": 1335.442865203666
+      }
+    },
+    {
+      "id": 21,
+      "filename": "img_000021.jpg",
+      "depth_filename": "depth_000021.png",
+      "timestamp": "2025-10-28T21:21:02.871408",
+      "trigger": "Time interval",
+      "depth_stats": {
+        "min": 290,
+        "max": 28355,
+        "mean": 1317.3122185228387
+      }
+    },
+    {
+      "id": 22,
+      "filename": "img_000022.jpg",
+      "depth_filename": "depth_000022.png",
+      "timestamp": "2025-10-28T21:21:04.885083",
+      "trigger": "Time interval",
+      "depth_stats": {
+        "min": 290,
+        "max": 65535,
+        "mean": 1337.8786312544757
+      }
+    },
+    {
+      "id": 23,
+      "filename": "img_000023.jpg",
+      "depth_filename": "depth_000023.png",
+      "timestamp": "2025-10-28T21:21:06.898002",
+      "trigger": "Time interval",
+      "depth_stats": {
+        "min": 290,
+        "max": 65535,
+        "mean": 1373.0066356488662
+      }
+    },
+    {
+      "id": 24,
+      "filename": "img_000024.jpg",
+      "depth_filename": "depth_000024.png",
+      "timestamp": "2025-10-28T21:21:08.912083",
+      "trigger": "Time interval",
+      "depth_stats": {
+        "min": 290,
+        "max": 65535,
+        "mean": 1307.9268171283695
+      }
+    },
+    {
+      "id": 25,
+      "filename": "img_000025.jpg",
+      "depth_filename": "depth_000025.png",
+      "timestamp": "2025-10-28T21:21:10.924390",
+      "trigger": "Time interval",
+      "depth_stats": {
+        "min": 290,
+        "max": 25834,
+        "mean": 1297.126367473512
+      }
+    },
+    {
+      "id": 26,
+      "filename": "img_000026.jpg",
+      "depth_filename": "depth_000026.png",
+      "timestamp": "2025-10-28T21:21:12.937880",
+      "trigger": "Time interval",
+      "depth_stats": {
+        "min": 290,
+        "max": 16146,
+        "mean": 1300.8184512112684
+      }
+    },
+    {
+      "id": 27,
+      "filename": "img_000027.jpg",
+      "depth_filename": "depth_000027.png",
+      "timestamp": "2025-10-28T21:21:14.950263",
+      "trigger": "Time interval",
+      "depth_stats": {
+        "min": 290,
+        "max": 65535,
+        "mean": 1319.9026021838918
+      }
+    },
+    {
+      "id": 28,
+      "filename": "img_000028.jpg",
+      "depth_filename": "depth_000028.png",
+      "timestamp": "2025-10-28T21:21:16.966435",
+      "trigger": "Time interval",
+      "depth_stats": {
+        "min": 290,
+        "max": 34192,
+        "mean": 1278.3406167539679
+      }
+    },
+    {
+      "id": 29,
+      "filename": "img_000029.jpg",
+      "depth_filename": "depth_000029.png",
+      "timestamp": "2025-10-28T21:21:18.975694",
+      "trigger": "Time interval",
+      "depth_stats": {
+        "min": 290,
+        "max": 29063,
+        "mean": 1324.0763744568299
+      }
+    },
+    {
+      "id": 30,
+      "filename": "img_000030.jpg",
+      "depth_filename": "depth_000030.png",
+      "timestamp": "2025-10-28T21:21:20.988475",
+      "trigger": "Time interval",
+      "depth_stats": {
+        "min": 290,
+        "max": 24220,
+        "mean": 1261.104381843083
+      }
+    },
+    {
+      "id": 31,
+      "filename": "img_000031.jpg",
+      "depth_filename": "depth_000031.png",
+      "timestamp": "2025-10-28T21:21:23.001465",
+      "trigger": "Time interval",
+      "depth_stats": {
+        "min": 290,
+        "max": 25834,
+        "mean": 1260.3768795621838
+      }
+    },
+    {
+      "id": 32,
+      "filename": "img_000032.jpg",
+      "depth_filename": "depth_000032.png",
+      "timestamp": "2025-10-28T21:21:25.017972",
+      "trigger": "Time interval",
+      "depth_stats": {
+        "min": 290,
+        "max": 31420,
+        "mean": 1209.7050651386562
+      }
+    },
+    {
+      "id": 33,
+      "filename": "img_000033.jpg",
+      "depth_filename": "depth_000033.png",
+      "timestamp": "2025-10-28T21:21:27.028545",
+      "trigger": "Time interval",
+      "depth_stats": {
+        "min": 290,
+        "max": 23725,
+        "mean": 1203.3588740178145
+      }
+    },
+    {
+      "id": 34,
+      "filename": "img_000034.jpg",
+      "depth_filename": "depth_000034.png",
+      "timestamp": "2025-10-28T21:21:29.040381",
+      "trigger": "Time interval",
+      "depth_stats": {
+        "min": 290,
+        "max": 65535,
+        "mean": 1259.7105611096936
+      }
+    },
+    {
+      "id": 35,
+      "filename": "img_000035.jpg",
+      "depth_filename": "depth_000035.png",
+      "timestamp": "2025-10-28T21:21:31.054166",
+      "trigger": "Time interval",
+      "depth_stats": {
+        "min": 290,
+        "max": 65535,
+        "mean": 1279.363504033944
+      }
+    },
+    {
+      "id": 36,
+      "filename": "img_000036.jpg",
+      "depth_filename": "depth_000036.png",
+      "timestamp": "2025-10-28T21:21:33.066969",
+      "trigger": "Time interval",
+      "depth_stats": {
+        "min": 290,
+        "max": 65535,
+        "mean": 1290.4762172021888
+      }
+    },
+    {
+      "id": 37,
+      "filename": "img_000037.jpg",
+      "depth_filename": "depth_000037.png",
+      "timestamp": "2025-10-28T21:21:35.080023",
+      "trigger": "Time interval",
+      "depth_stats": {
+        "min": 290,
+        "max": 65535,
+        "mean": 1238.8024463092022
+      }
+    },
+    {
+      "id": 38,
+      "filename": "img_000038.jpg",
+      "depth_filename": "depth_000038.png",
+      "timestamp": "2025-10-28T21:21:37.093134",
+      "trigger": "Time interval",
+      "depth_stats": {
+        "min": 290,
+        "max": 19704,
+        "mean": 1258.1838818413014
+      }
+    }
+  ],
+  "end_time": "2025-10-28T21:22:33.887366",
+  "total_images": 38
+}
