@@ -3,6 +3,8 @@ install/
 log/
 
 underwater_dataset/
+dataset_collection/
+rosbag2*/
 
 __pycache__/
 *.pyc

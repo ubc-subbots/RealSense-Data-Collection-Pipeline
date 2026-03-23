@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+"""
+RealSense Subscriber with YOLO Object Detection
+
+This node subscribes to RealSense camera topics, runs YOLO detection,
+and displays bounding boxes with distance measurements.
+"""
 
 import rclpy
 from rclpy.node import Node
@@ -6,37 +12,57 @@ from sensor_msgs.msg import Image, CameraInfo
 from cv_bridge import CvBridge
 import cv2
 import numpy as np
+from ultralytics import YOLO
+import os
+from datetime import date
 
 
-class RealSenseSubscriber(Node):
+class RealSenseYoloSubscriber(Node):
     def __init__(self):
-        super().__init__('realsense_subscriber')
+        super().__init__('realsense_yolo_subscriber')
         
-        # Create CV Bridge for converting ROS Image messages to OpenCV format
         self.bridge = CvBridge()
+
         
-        # Declare parameters
+        self.declare_parameter('model_path', '/home/eraofcoding/Subbots/deepsense_test/src/realsense_subscriber/realsense_subscriber/best.pt')
+        self.declare_parameter('confidence_threshold', 0.5)
         self.declare_parameter('show_color', True)
         self.declare_parameter('show_depth', True)
-        self.declare_parameter('save_images', False)
-        self.declare_parameter('show_closest_object', True)
-        self.declare_parameter('show_center_distance', True)
+        self.declare_parameter('save_images', False) # Toggle for automatic saving
+        self.declare_parameter('device', 'cpu')
+        self.declare_parameter('save_dir', '/home/eraofcoding/Subbots/deepsense_test/dataset_collection')
         
-        # Get parameters
+        self.conf_threshold = self.get_parameter('confidence_threshold').value
         self.show_color = self.get_parameter('show_color').value
         self.show_depth = self.get_parameter('show_depth').value
         self.save_images = self.get_parameter('save_images').value
-        self.show_closest_object = self.get_parameter('show_closest_object').value
-        self.show_center_distance = self.get_parameter('show_center_distance').value
+        model_path = self.get_parameter('model_path').value
+        device = self.get_parameter('device').value
+
+        self.save_next_frame = False
         
-        # Image counter for saving
+        self.save_dir = self.get_parameter('save_dir').value
+        os.makedirs(self.save_dir, exist_ok=True)
+        
+        self.get_logger().info('='*60)
+        self.get_logger().info('RealSense YOLO Subscriber')
+        self.get_logger().info('='*60)
+        self.get_logger().info(f'Loading YOLO model from: {model_path}')
+        
+        try:
+            self.model = YOLO(model_path)
+            self.model.to(device)
+            self.get_logger().info(f'✓ YOLO model loaded successfully on {device}')
+        except Exception as e:
+            self.get_logger().error(f'✗ Failed to load YOLO model: {str(e)}')
+            raise
+        
         self.image_count = 0
         
-        # Store latest images for synchronized processing
+        # Latest images
         self.latest_color = None
         self.latest_depth = None
         
-        # Create subscribers
         self.color_sub = self.create_subscription(
             Image,
             '/camera/color/image_raw',
@@ -58,56 +84,45 @@ class RealSenseSubscriber(Node):
             10
         )
         
-        self.get_logger().info('RealSense Subscriber initialized')
+        self.get_logger().info(f'Confidence threshold: {self.conf_threshold}')
         self.get_logger().info(f'Show Color: {self.show_color}, Show Depth: {self.show_depth}')
-        self.get_logger().info(f'Show Closest Object: {self.show_closest_object}')
+        self.get_logger().info('='*60)
         
-        # Store camera info
         self.camera_info = None
         
     def color_callback(self, msg):
-        """
-        Callback for color image messages
-        """
+        """Callback for color image messages"""
         try:
             # Convert ROS Image message to OpenCV format
             self.latest_color = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
-            
-            # Save image if enabled
-            if self.save_images:
-                filename = f'color_image_{self.image_count}.jpg'
-                cv2.imwrite(filename, self.latest_color)
-                self.get_logger().info(f'Saved {filename}')
                 
         except Exception as e:
             self.get_logger().error(f'Error processing color image: {str(e)}')
     
     def depth_callback(self, msg):
-        """
-        Callback for depth image messages
-        """
+        """Callback for depth image messages"""
         try:
             # Convert ROS Image message to OpenCV format (16-bit depth)
             self.latest_depth = self.bridge.imgmsg_to_cv2(msg, desired_encoding='16UC1')
             
-            # Process and display combined visualization
             if self.latest_color is not None and self.latest_depth is not None:
                 self.process_and_display()
             
-            # Save depth image if enabled
-            if self.save_images:
-                filename = f'depth_image_{self.image_count}.png'
-                cv2.imwrite(filename, self.latest_depth)
-                self.get_logger().info(f'Saved {filename}')
-                self.image_count += 1
+            if self.save_images and self.save_next_frame == True and self.latest_color is not None:
+                os.makedirs(self.save_dir, exist_ok=True)
+                dated_dir = f'{self.save_dir}/{date.today()}'
+                os.makedirs(dated_dir, exist_ok=True)
+                cv2.imwrite(f'{dated_dir}/detection_{self.image_count}.jpg', self.latest_color)
+                self.get_logger().info(f'Saved {dated_dir}/detection_{self.image_count}.jpg')
+                self.save_next_frame = False
+                
+            self.image_count += 1
                 
         except Exception as e:
             self.get_logger().error(f'Error processing depth image: {str(e)}')
     
     def camera_info_callback(self, msg):
-        """
-        Callback for camera info messages
-        """
+        """Callback for camera info messages"""
         if self.camera_info is None:
             self.camera_info = msg
             self.get_logger().info('Camera Info received:')
@@ -116,84 +131,98 @@ class RealSenseSubscriber(Node):
             self.get_logger().info(f'  Principal Point: cx={msg.k[2]:.2f}, cy={msg.k[5]:.2f}')
     
     def process_and_display(self):
-        """
-        Process depth and color images together with distance information
-        """
+        """Process depth and color images with YOLO detection"""
         color_display = self.latest_color.copy()
         depth_image = self.latest_depth.copy()
         
-        # Get image dimensions
         height, width = depth_image.shape
         center_x, center_y = width // 2, height // 2
         
-        # === CLOSEST OBJECT DETECTION ===
-        if self.show_closest_object:
-            # Find closest object (minimum non-zero depth)
-            valid_depth_mask = depth_image > 0
-            if np.any(valid_depth_mask):
-                min_distance = np.min(depth_image[valid_depth_mask])
+        results = self.model(self.latest_color, conf=self.conf_threshold, verbose=False)
+
+        box_color = (0, 255, 0) # Green
+        pointer_color = (128, 0, 128) # Purple
+        
+        if len(results) > 0:
+            result = results[0]
+            boxes = result.boxes
+            
+            if boxes is not None and len(boxes) > 0:
+                detection_info = []
                 
-                # Find position(s) of closest object
-                closest_positions = np.where(depth_image == min_distance)
+                for box in boxes:
+                    xyxy = box.xyxy.cpu().numpy()[0]
+                    x1, y1, x2, y2 = map(int, xyxy)
+                    
+                    class_id = int(box.cls.cpu().numpy())
+                    class_name = result.names[class_id]
+                    confidence = float(box.conf.cpu().numpy())
+                    
+                    bbox_center_x = int((x1 + x2) / 2)
+                    bbox_center_y = int((y1 + y2) / 2)
+                    
+                    distance_str = ""
+                    if 0 <= bbox_center_x < width and 0 <= bbox_center_y < height:
+                        depth_value = depth_image[bbox_center_y, bbox_center_x]
+                        if depth_value > 0:
+                            distance_m = depth_value / 1000.0
+                            distance_str = f" @ {distance_m:.2f}m"
+                    
+                    cv2.rectangle(color_display, (x1, y1), (x2, y2), box_color, 2)
+                    
+                    cv2.circle(color_display, (bbox_center_x, bbox_center_y), 5, (0, 0, 255), -1)
+                    
+                    label = f"{class_name}: {confidence:.2f}{distance_str}"
+                    
+                    (label_width, label_height), baseline = cv2.getTextSize(
+                        label, cv2.FONT_HERSHEY_SIMPLEX, 0.6, 2
+                    )
+                    cv2.rectangle(
+                        color_display,
+                        (x1, y1 - label_height - 10),
+                        (x1 + label_width, y1),
+                        box_color,
+                        -1
+                    )
+                    
+                    cv2.putText(
+                        color_display,
+                        label,
+                        (x1, y1 - 5),
+                        cv2.FONT_HERSHEY_SIMPLEX,
+                        0.6,
+                        (0, 0, 0),
+                        2
+                    )
+                    
+                    detection_info.append(f"{class_name}:{confidence:.2f}{distance_str}")
                 
-                if len(closest_positions[0]) > 0:
-                    # Get the first closest point (or you could use centroid)
-                    closest_y = closest_positions[0][0]
-                    closest_x = closest_positions[1][0]
-                    
-                    # Draw marker on color image
-                    cv2.circle(color_display, (closest_x, closest_y), 10, (0, 0, 255), 2)
-                    cv2.circle(color_display, (closest_x, closest_y), 3, (0, 0, 255), -1)
-                    
-                    # Draw crosshair
-                    cv2.line(color_display, (closest_x - 20, closest_y), 
-                            (closest_x + 20, closest_y), (0, 0, 255), 2)
-                    cv2.line(color_display, (closest_x, closest_y - 20), 
-                            (closest_x, closest_y + 20), (0, 0, 255), 2)
-                    
-                    # Display distance text
-                    distance_m = min_distance / 1000.0
-                    text = f"CLOSEST: {distance_m:.2f}m"
-                    cv2.putText(color_display, text, (closest_x + 25, closest_y - 10),
-                               cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
-                    
-                    # Log to console
+                if detection_info:
                     self.get_logger().info(
-                        f'Closest object at ({closest_x}, {closest_y}): {min_distance}mm ({distance_m:.2f}m)',
-                        throttle_duration_sec=1.0  # Log once per second
+                        f'Detected: {", ".join(detection_info)}',
+                        throttle_duration_sec=1.0
                     )
         
-        # === CENTER DISTANCE ===
-        if self.show_center_distance:
-            # Get distance at center of image
-            center_distance = depth_image[center_y, center_x]
-            
-            # Draw center crosshair
-            cv2.line(color_display, (center_x - 30, center_y), 
-                    (center_x + 30, center_y), (0, 255, 0), 2)
-            cv2.line(color_display, (center_x, center_y - 30), 
-                    (center_x, center_y + 30), (0, 255, 0), 2)
-            cv2.circle(color_display, (center_x, center_y), 5, (0, 255, 0), 2)
-            
-            # Display distance text
-            if center_distance > 0:
-                distance_m = center_distance / 1000.0
-                text = f"Center: {distance_m:.2f}m"
-                cv2.putText(color_display, text, (center_x + 40, center_y),
-                           cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
-            else:
-                text = "Center: No data"
-                cv2.putText(color_display, text, (center_x + 40, center_y),
-                           cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+        center_distance = depth_image[center_y, center_x]
         
-        # === DEPTH STATISTICS ===
+        cv2.line(color_display, (center_x - 30, center_y), 
+                (center_x + 30, center_y), pointer_color, 2)
+        cv2.line(color_display, (center_x, center_y - 30), 
+                (center_x, center_y + 30), pointer_color, 2)
+        cv2.circle(color_display, (center_x, center_y), 5, pointer_color, 2)
+        
+        if center_distance > 0:
+            distance_m = center_distance / 1000.0
+            text = f"Center: {distance_m:.2f}m"
+            cv2.putText(color_display, text, (center_x + 40, center_y),
+                       cv2.FONT_HERSHEY_SIMPLEX, 0.7, pointer_color, 2)
+        
         valid_depths = depth_image[depth_image > 0]
         if len(valid_depths) > 0:
             min_dist = np.min(valid_depths)
             max_dist = np.max(valid_depths)
             avg_dist = np.mean(valid_depths)
             
-            # Display statistics on image
             stats_text = [
                 f"Min: {min_dist}mm ({min_dist/1000:.2f}m)",
                 f"Max: {max_dist}mm ({max_dist/1000:.2f}m)",
@@ -207,9 +236,8 @@ class RealSenseSubscriber(Node):
                 cv2.putText(color_display, text, (10, y_offset + i*30),
                            cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 0), 1)
         
-        # === DISPLAY IMAGES ===
         if self.show_color:
-            cv2.imshow('Color Image with Distance Info', color_display)
+            cv2.imshow('YOLO Detection with Distance', color_display)
         
         if self.show_depth:
             # Normalize depth for visualization (0-5000mm to 0-255)
@@ -217,25 +245,23 @@ class RealSenseSubscriber(Node):
             mask = depth_image > 0
             depth_normalized[mask] = np.clip(depth_image[mask] / 5000.0 * 255, 0, 255).astype(np.uint8)
             
-            # Apply colormap for better visualization
+            # Apply colormap
             depth_colormap = cv2.applyColorMap(depth_normalized, cv2.COLORMAP_JET)
             
-            # Mark closest object on depth map too
-            if self.show_closest_object and np.any(valid_depth_mask):
-                cv2.circle(depth_colormap, (closest_x, closest_y), 10, (255, 255, 255), 2)
-            
             # Mark center on depth map
-            if self.show_center_distance:
-                cv2.circle(depth_colormap, (center_x, center_y), 5, (255, 255, 255), 2)
+            cv2.circle(depth_colormap, (center_x, center_y), 5, (255, 255, 255), 2)
             
             cv2.imshow('Depth Image', depth_colormap)
         
-        cv2.waitKey(1)
+        # Wait for key press (1ms)
+        key = cv2.waitKey(1) & 0xFF
+        
+        if key == ord('s'):
+            self.get_logger().info('Saving next frame')
+            self.save_next_frame = True
     
     def __del__(self):
-        """
-        Cleanup when node is destroyed
-        """
+        """Cleanup when node is destroyed"""
         cv2.destroyAllWindows()
 
 
@@ -243,10 +269,10 @@ def main(args=None):
     rclpy.init(args=args)
     
     try:
-        subscriber = RealSenseSubscriber()
+        subscriber = RealSenseYoloSubscriber()
         rclpy.spin(subscriber)
     except KeyboardInterrupt:
-        pass
+        print('\nShutdown requested by user')
     except Exception as e:
         print(f'Error: {e}')
     finally:

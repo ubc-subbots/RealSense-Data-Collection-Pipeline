@@ -1,4 +1,6 @@
 from setuptools import setup
+import os
+from glob import glob
 
 package_name = 'realsense_subscriber'
 
@@ -9,6 +11,8 @@ setup(
     data_files=[
         ('share/ament_index/resource_index/packages', ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
+        (os.path.join('share', 'realsense_subscriber', 'launch'),
+            glob('launch/*.launch.py'))
     ],
     install_requires=['setuptools'],
     zip_safe=True,
