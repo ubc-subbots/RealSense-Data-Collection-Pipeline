@@ -14,7 +14,8 @@ import cv2
 import numpy as np
 from ultralytics import YOLO
 import os
-from datetime import date
+from datetime import date, datetime
+import json
 
 
 class RealSenseYoloSubscriber(Node):
@@ -112,7 +113,9 @@ class RealSenseYoloSubscriber(Node):
                 os.makedirs(self.save_dir, exist_ok=True)
                 dated_dir = f'{self.save_dir}/{date.today()}'
                 os.makedirs(dated_dir, exist_ok=True)
-                cv2.imwrite(f'{dated_dir}/detection_{self.image_count}.jpg', self.latest_color)
+                filename = f'{dated_dir}/detection_{self.image_count}.jpg'
+                cv2.imwrite(filename, self.latest_color)
+                self.save_metadata(dated_dir, filename)
                 self.get_logger().info(f'Saved {dated_dir}/detection_{self.image_count}.jpg')
                 self.save_next_frame = False
                 
@@ -120,6 +123,50 @@ class RealSenseYoloSubscriber(Node):
                 
         except Exception as e:
             self.get_logger().error(f'Error processing depth image: {str(e)}')
+    
+    def save_metadata(self, dated_dir, filename):
+        metadata_path = f'{dated_dir}/metadata.json'
+        
+        if os.path.exists(metadata_path):
+            with open(metadata_path, 'r') as f:
+                metadata = json.load(f)
+        else:
+            metadata = {'captures': []}
+        
+        detections = []
+        if self.latest_color is not None:
+            results = self.model(self.latest_color, conf=self.conf_threshold, verbose=False)
+            if len(results) > 0:
+                for box in results[0].boxes:
+                    class_id = int(box.cls.cpu().numpy())
+                    detections.append({
+                        'class': results[0].names[class_id],
+                        'confidence': round(float(box.conf.cpu().numpy()), 4),
+                        'bbox': list(map(int, box.xyxy.cpu().numpy()[0])),
+                    })
+        
+        center_y, center_x = self.latest_depth.shape[0] // 2, self.latest_depth.shape[1] // 2
+        center_depth = self.latest_depth[center_y, center_x]
+        
+        entry = {
+            'filename': filename,
+            'timestamp': datetime.now().isoformat(),
+            'frame_number': self.image_count,
+            'resolution': {
+                'width': self.latest_color.shape[1],
+                'height': self.latest_color.shape[0],
+            },
+            'center_distance_m': round(center_depth / 1000.0, 4) if center_depth > 0 else None,
+            'confidence_threshold': self.conf_threshold,
+            'detections': detections,
+        }
+        
+        metadata['captures'].append(entry)
+        
+        with open(metadata_path, 'w') as f:
+            json.dump(metadata, f, indent=2)
+        
+        self.get_logger().info(f'Updated metadata.json with {len(detections)} detection(s)')
     
     def camera_info_callback(self, msg):
         """Callback for camera info messages"""
